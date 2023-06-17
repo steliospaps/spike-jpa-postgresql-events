@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  postgres:
+    # Official Postgres image from DockerHub (we use the last version)
+    image: 'postgres:15.3'
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: dev
+      POSTGRES_PASSWORD: dev1
+      POSTGRES_DB: dev_db

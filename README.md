@@ -18,3 +18,17 @@ sequenceDiagram
     app1-->>client1: stream update 
     
 ```
+
+# dev
+## swagger
+ [swagger](http://localhost:8080/swagger-ui.html)
+## local dev db (docker-compose)
+### start local dev db
+```
+docker-compose up -d
+```
+### interact with local dev db
+```
+docker exec -it $(docker-compose ps -q) psql -d dev_db -U dev
+```
+
