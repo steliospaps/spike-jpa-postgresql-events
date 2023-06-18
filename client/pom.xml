@@ -8,6 +8,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<properties>
 		<java.version>20</java.version>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 	</properties>
 	<dependencies>
 		<!--
@@ -24,8 +26,22 @@
 			<artifactId>spring-boot-starter-json</artifactId>
 			<version>3.1.0</version>
 		</dependency>
+
+		<!--
+		https://mvnrepository.com/artifact/io.projectreactor.netty/reactor-netty-http -->
+		<dependency>
+			<groupId>io.projectreactor.netty</groupId>
+			<artifactId>reactor-netty-http</artifactId>
+			<version>1.1.8</version>
+		</dependency>
+		<dependency>
+			<groupId>io.github.steliospaps</groupId>
+			<artifactId>spike-jpa-postgresql-events-dto</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 
 	<build>
+
 	</build>
 </project>
