@@ -1,11 +1,9 @@
 package io.github.steliospaps.spike.jpa.postgresql.events.client;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Consumer;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemDto;
+import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemUpdateDto;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
@@ -13,14 +11,15 @@ import org.springframework.http.MediaType;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.socket.WebSocketMessage;
 import org.springframework.web.reactive.socket.client.ReactorNettyWebSocketClient;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemDto;
-import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemUpdateDto;
 import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
+
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 public class Client implements AutoCloseable {
 
@@ -72,8 +71,8 @@ public class Client implements AutoCloseable {
                     .map(i -> toItemUpdate(i))//
                     .log(loggerName)//
                     .doOnNext(update -> {
-                        update.getModified().ifPresent(modifiedCallBack::accept);
-                        update.getDeletedId().ifPresent(deletedIdCallback::accept);
+                        Optional.ofNullable(update.getModified()).ifPresent(modifiedCallBack::accept);
+                        Optional.ofNullable(update.getDeletedId()).ifPresent(deletedIdCallback::accept);
                     }).ignoreElements().map(i -> ws.textMessage("")));
         }).subscribe());
     }
@@ -122,7 +121,7 @@ public class Client implements AutoCloseable {
     }
 
     public Mono<Void> deleteItem(Integer id) {
-        return this.webClient.delete().uri(ub -> ub.path("/api/item").build())//
+        return this.webClient.delete().uri(ub -> ub.path("/api/item/{id}").build(id))//
                 .exchangeToMono(response -> {
                     if (response.statusCode().is2xxSuccessful()) {
                         return Mono.empty();

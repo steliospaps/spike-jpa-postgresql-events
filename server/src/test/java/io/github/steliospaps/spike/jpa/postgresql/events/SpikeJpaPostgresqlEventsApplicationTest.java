@@ -1,13 +1,8 @@
 package io.github.steliospaps.spike.jpa.postgresql.events;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.awaitility.Awaitility.await;
-import static org.junit.Assert.assertThrows;
-
-import java.time.Duration;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import io.github.steliospaps.spike.jpa.postgresql.events.client.Client;
+import io.github.steliospaps.spike.jpa.postgresql.events.db.ItemRepository;
+import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemDto;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +11,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-import io.github.steliospaps.spike.jpa.postgresql.events.client.Client;
-import io.github.steliospaps.spike.jpa.postgresql.events.db.ItemRepository;
-import io.github.steliospaps.spike.jpa.postgresql.events.dto.ItemDto;
+import java.time.Duration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertThrows;
+
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT, properties = {
+        "spring.datasource.url=jdbc:tc:postgresql:15.3:///integration-tests-db"})
 class SpikeJpaPostgresqlEventsApplicationTest {
 
     private static final Duration TIMEOUT = Duration.ofSeconds(5);
@@ -79,9 +79,9 @@ class SpikeJpaPostgresqlEventsApplicationTest {
 
         await().untilAsserted(() -> assertThat(modified).anyMatch(i -> i.equals(updated)));
 
-        assertThat(client.getItem(created.getId()).block(TIMEOUT)).isEqualTo(created);
+        assertThat(client.getItem(created.getId()).block(TIMEOUT)).isEqualTo(updated);
 
-        assertThat(client.getItems().block(TIMEOUT)).isEqualTo(List.of(created));
+        assertThat(client.getItems().block(TIMEOUT)).isEqualTo(List.of(updated));
 
         assertThat(deleted).isEmpty();
 
@@ -91,7 +91,7 @@ class SpikeJpaPostgresqlEventsApplicationTest {
         // when deleting
         client.deleteItem(updated.getId()).block(TIMEOUT);
 
-        await().untilAsserted(() -> assertThat(modified).anyMatch(i -> i.equals(updated)));
+        await().untilAsserted(() -> assertThat(deleted).anyMatch(i -> i == created.getId()));
 
         assertThrows(Exception.class, () -> client.getItem(created.getId()).block(TIMEOUT));
 

@@ -1,11 +1,14 @@
 package io.github.steliospaps.spike.jpa.postgresql.events.dto;
 
-import java.util.Optional;
-
-import lombok.Data;
+import lombok.*;
 
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class ItemUpdateDto {
-    Optional<ItemDto> modified;
-    Optional<Integer> deletedId;
+
+    private ItemDto modified;
+
+    private Integer deletedId;
 }
