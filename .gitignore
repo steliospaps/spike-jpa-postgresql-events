@@ -31,3 +31,12 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### gradle ###
+.gradle
+/build/
+!gradle-wrapper.jar
+.gradletasknamecache
+
+### java ###
+hs_err_pid*
