@@ -29,7 +29,7 @@ dependencies {
 
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
-    
+
 }
 
 publishing {
@@ -38,4 +38,9 @@ publishing {
             from(components.java)
         }
     }
+}
+
+
+test {
+    useJUnitPlatform()
 }
