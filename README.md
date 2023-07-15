@@ -42,3 +42,12 @@ docker-compose up -d
 docker exec -it $(docker-compose ps -q) psql -d dev_db -U dev
 ```
 
+### run locally
+
+```
+./gradlew bootRun
+```
+
+Connect to websocket `ws://localhost:8080/events/item`
+
+Interact via swagger (see above)
